@@ -12,7 +12,7 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare lastName: string | null;
   declare email: string;
   declare password: string;
-  declare isActive: boolean;
+  declare isActive: CreationOptional<boolean>;
   declare role: CreationOptional<string>;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
