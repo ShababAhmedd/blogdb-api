@@ -110,3 +110,26 @@ export const getAllBlogs = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const getBlogById = async (req: Request, res: Response) => {
+  try {
+    const blogID = req.params.id;
+    const findBlog = await Blog.findByPk(blogID);
+
+    if (!findBlog) {
+      return res.status(404).json({
+        message: "blog not found",
+      });
+    }
+
+    res.status(200).json({
+      message: "blog found",
+      data: findBlog,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "internal server error",
+      data: getErrorMessage(error),
+    });
+  }
+};
