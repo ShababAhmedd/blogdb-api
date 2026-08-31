@@ -16,3 +16,30 @@ export const getUsers = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const getUserById = async (
+  req: Request<{ id: string }>,
+  res: Response,
+) => {
+  try {
+    const userID = req.params.id;
+    const findUser = await User.findByPk(userID, {
+      attributes: { exclude: ["password"] },
+    });
+
+    if (!findUser) {
+      return res.status(404).json({
+        message: "user not found",
+      });
+    }
+    res.status(200).json({
+      message: "user found",
+      data: findUser,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "server error",
+      data: getErrorMessage(error),
+    });
+  }
+};
