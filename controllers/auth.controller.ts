@@ -63,6 +63,11 @@ export const login = async (req: Request, res: Response) => {
     }
 
     if (!findUser.isActive) {
+      if (findUser.role == "user") {
+        return res.status(403).json({
+          message: "user not activated",
+        });
+      }
       return res.status(403).json({
         message: "admin not activated",
       });

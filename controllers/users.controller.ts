@@ -43,3 +43,52 @@ export const getUserById = async (
     });
   }
 };
+
+export const userStatus = async (
+  req: Request<{ id: string }>,
+  res: Response,
+) => {
+  try {
+    const userID = parseInt(req.params.id);
+    const status = req.body;
+
+    if (!userID) {
+      return res.status(404).json({
+        message: "invalid user id provided",
+      });
+    }
+
+    if (status.isActive != true && status.isActive != false) {
+      return res.status(400).json({
+        message: "invalid status provided",
+      });
+    }
+
+    const [affectedRows] = await User.update(status, { where: { id: userID } });
+    if (affectedRows === 0) {
+      return res.status(404).json({
+        message: "no user found with the given id",
+      });
+    }
+
+    const updated = await User.findByPk(userID);
+    res.status(200).json({
+      message: "user status updated",
+      data: {
+        id: updated?.id,
+        firstName: updated?.firstName,
+        lastName: updated?.lastName,
+        email: updated?.email,
+        isActive: updated?.isActive,
+        role: updated?.role,
+        createdAt: updated?.createdAt,
+        updatedAt: updated?.updatedAt,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "server error",
+      data: getErrorMessage(error),
+    });
+  }
+};
