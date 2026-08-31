@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import type { AuthenticatedRequest } from "../utils/authenticatedRequest.ts";
 import getErrorMessage from "../utils/getErrorMessage.ts";
 import Blog from "../models/blog.model.ts";
+import User from "../models/user.model.ts";
 
 export const createBlog = async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -80,6 +81,27 @@ export const deleteBlog = async (req: AuthenticatedRequest, res: Response) => {
 
     res.status(200).json({
       message: "blog deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "internal server error",
+      data: getErrorMessage(error),
+    });
+  }
+};
+
+export const getAllBlogs = async (req: Request, res: Response) => {
+  try {
+    const blogs = await Blog.findAll({
+      attributes: { exclude: ["userId", "createdAt", "updatedAt"] },
+      include: {
+        model: User,
+        as: "author",
+        attributes: ["id", "firstname", "lastname"],
+      },
+    });
+    res.status(200).json({
+      data: blogs,
     });
   } catch (error) {
     res.status(500).json({
