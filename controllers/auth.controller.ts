@@ -45,7 +45,7 @@ export const signUp = async (req: Request, res: Response) => {
     });
   } catch (error) {
     res.status(500).json({
-      message: "server error",
+      message: "internal server error",
       data: getErrorMessage(error),
     });
   }
@@ -107,7 +107,7 @@ export const login = async (req: Request, res: Response) => {
     });
   } catch (error) {
     res.status(500).json({
-      message: "server error",
+      message: "internal server error",
       data: getErrorMessage(error),
     });
   }

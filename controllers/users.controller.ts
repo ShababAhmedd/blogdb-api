@@ -13,7 +13,7 @@ export const getUsers = async (req: Request, res: Response) => {
     });
   } catch (error) {
     res.status(500).json({
-      message: "server error",
+      message: "internal server error",
       data: getErrorMessage(error),
     });
   }
@@ -40,7 +40,7 @@ export const getUserById = async (
     });
   } catch (error) {
     res.status(500).json({
-      message: "server error",
+      message: "internal server error",
       data: getErrorMessage(error),
     });
   }
@@ -89,7 +89,7 @@ export const userStatus = async (
     });
   } catch (error) {
     res.status(500).json({
-      message: "server error",
+      message: "internal server error",
       data: getErrorMessage(error),
     });
   }
@@ -116,7 +116,7 @@ export const ownProfile = async (req: AuthenticatedRequest, res: Response) => {
     });
   } catch (error) {
     res.status(500).json({
-      message: "server error",
+      message: "internal server error",
       data: getErrorMessage(error),
     });
   }
@@ -168,7 +168,7 @@ export const updateProfile = async (
     });
   } catch (error) {
     res.status(500).json({
-      message: "server error",
+      message: "internal server error",
       data: getErrorMessage(error),
     });
   }
@@ -215,7 +215,7 @@ export const updatePassword = async (
     });
   } catch (error) {
     res.status(500).json({
-      message: "server error",
+      message: "internal server error",
       data: getErrorMessage(error),
     });
   }

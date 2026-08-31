@@ -40,7 +40,7 @@ export const authMiddleWare = (
       });
     }
     return res.status(500).json({
-      message: "server error",
+      message: "internal server error",
       data: getErrorMessage(error),
     });
   }
