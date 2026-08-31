@@ -173,3 +173,50 @@ export const updateProfile = async (
     });
   }
 };
+
+export const updatePassword = async (
+  req: AuthenticatedRequest,
+  res: Response,
+) => {
+  try {
+    const { password } = req.body;
+
+    if (!password) {
+      return res.status(400).json({
+        message: "new password is required",
+      });
+    }
+
+    const userID =
+      typeof req.user === "object" && req.user != null
+        ? req.user.id
+        : undefined;
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const [affectedRows] = await User.update(
+      { password: hashedPassword },
+      {
+        where: { id: userID },
+      },
+    );
+
+    if (affectedRows == 0) {
+      return res.status(404).json({
+        message: "user not found",
+      });
+    }
+    const updated = await User.findByPk(userID, {
+      attributes: { exclude: ["password"] },
+    });
+
+    res.status(200).json({
+      message: "password updated successfully",
+      data: updated,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "server error",
+      data: getErrorMessage(error),
+    });
+  }
+};
