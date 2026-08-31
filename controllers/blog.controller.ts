@@ -66,3 +66,25 @@ export const updateBlog = async (req: AuthenticatedRequest, res: Response) => {
     });
   }
 };
+
+export const deleteBlog = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const blogID = req.params.id;
+    const deleted = await Blog.destroy({ where: { id: blogID } });
+
+    if (!deleted) {
+      return res.status(404).json({
+        message: "blog not found",
+      });
+    }
+
+    res.status(200).json({
+      message: "blog deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "internal server error",
+      data: getErrorMessage(error),
+    });
+  }
+};

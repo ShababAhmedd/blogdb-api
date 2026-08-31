@@ -31,7 +31,7 @@ export const canModifyBlog = async (
 
     if (!isOwner && !isAdmin) {
       return res.status(403).json({
-        message: "blog can be updated by owner or admin",
+        message: "blog can be modified by owner or admin",
       });
     }
 
