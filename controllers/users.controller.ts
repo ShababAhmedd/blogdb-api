@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import getErrorMessage from "../utils/getErrorMessage.ts";
 import User from "../models/user.model.ts";
+import type { AuthenticatedRequest } from "../utils/authenticatedRequest.ts";
 
 export const getUsers = async (req: Request, res: Response) => {
   try {
@@ -84,6 +85,27 @@ export const userStatus = async (
         createdAt: updated?.createdAt,
         updatedAt: updated?.updatedAt,
       },
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "server error",
+      data: getErrorMessage(error),
+    });
+  }
+};
+
+export const ownProfile = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const userID =
+      typeof req.user === "object" && req.user != null
+        ? req.user.id
+        : undefined;
+
+    const findUser = await User.findByPk(userID, {
+      attributes: { exclude: ["password"] },
+    });
+    res.status(200).json({
+      data: findUser,
     });
   } catch (error) {
     res.status(500).json({

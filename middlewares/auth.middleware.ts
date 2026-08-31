@@ -1,13 +1,9 @@
 import type { NextFunction, Request, Response } from "express";
 import getErrorMessage from "../utils/getErrorMessage.ts";
 import jwt from "jsonwebtoken";
-import type { JwtPayload } from "jsonwebtoken";
+import type { AuthenticatedRequest } from "../utils/authenticatedRequest.ts";
 import dotenv from "dotenv";
 dotenv.config();
-
-interface AuthenticatedRequest extends Request {
-  user?: string | JwtPayload;
-}
 
 export const authMiddleWare = (
   req: AuthenticatedRequest,
@@ -17,7 +13,7 @@ export const authMiddleWare = (
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(403).json({
+      return res.status(401).json({
         message: "auth token required",
       });
     }
@@ -25,7 +21,7 @@ export const authMiddleWare = (
     const token = authHeader?.split(" ")[1];
 
     if (!token) {
-      return res.status(403).json({
+      return res.status(401).json({
         message: "auth token required",
       });
     }
@@ -38,6 +34,11 @@ export const authMiddleWare = (
     req.user = jwt.verify(token, secretKey);
     return next();
   } catch (error) {
+    if (error instanceof jwt.JsonWebTokenError) {
+      return res.status(401).json({
+        message: "invalid or expired token",
+      });
+    }
     return res.status(500).json({
       message: "server error",
       data: getErrorMessage(error),
@@ -56,7 +57,7 @@ export const isAdmin = (
       : undefined;
 
   if (role !== "admin") {
-    res.status(403).json({
+    return res.status(403).json({
       message: "admins only. access denied.",
     });
   }
