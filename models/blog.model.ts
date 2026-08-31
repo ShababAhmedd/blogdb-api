@@ -56,7 +56,7 @@ Blog.init(
   },
 );
 
-User.hasMany(Blog, { foreignKey: "userId" });
+User.hasMany(Blog, { foreignKey: "userId", onDelete: "CASCADE" });
 Blog.belongsTo(User, { foreignKey: "userId" });
 
 export default Blog;

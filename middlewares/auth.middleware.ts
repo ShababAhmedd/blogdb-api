@@ -9,6 +9,42 @@ interface AuthenticatedRequest extends Request {
   user?: string | JwtPayload;
 }
 
+export const authMiddleWare = (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(403).json({
+        message: "auth token required",
+      });
+    }
+
+    const token = authHeader?.split(" ")[1];
+
+    if (!token) {
+      return res.status(403).json({
+        message: "auth token required",
+      });
+    }
+
+    const secretKey = process.env.SECRET_KEY;
+    if (!secretKey) {
+      throw new Error("secret key is not configured");
+    }
+
+    req.user = jwt.verify(token, secretKey);
+    return next();
+  } catch (error) {
+    return res.status(500).json({
+      message: "server error",
+      data: getErrorMessage(error),
+    });
+  }
+};
+
 export const isAdmin = (
   req: AuthenticatedRequest,
   res: Response,
