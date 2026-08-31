@@ -35,3 +35,34 @@ export const createBlog = async (req: AuthenticatedRequest, res: Response) => {
     });
   }
 };
+
+export const updateBlog = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    let { blogTitle, blog, category } = req.body;
+
+    if (!blogTitle && !blog && !category) {
+      return res.status(400).json({
+        message: "invalid input",
+      });
+    }
+
+    if (!blogTitle) blogTitle = req.blog!.blogTitle;
+    if (!blog) blog = req.blog!.blog;
+    if (!category) category = req.blog!.category;
+
+    req.blog!.blogTitle = blogTitle;
+    req.blog!.blog = blog;
+    req.blog!.category = category;
+    await req.blog!.save();
+
+    res.status(200).json({
+      message: "blog updated successfully",
+      data: req.blog,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "internal server error",
+      data: getErrorMessage(error),
+    });
+  }
+};
