@@ -25,6 +25,13 @@ export const getUserById = async (
 ) => {
   try {
     const userID = req.params.id;
+
+    if (!/^\d+$/.test(userID)) {
+      return res.status(400).json({
+        message: "invalid user id",
+      });
+    }
+
     const findUser = await User.findByPk(userID, {
       attributes: { exclude: ["password"] },
     });
@@ -51,14 +58,16 @@ export const userStatus = async (
   res: Response,
 ) => {
   try {
-    const userID = parseInt(req.params.id);
-    const status = req.body;
+    const idParam = req.params.id;
 
-    if (!userID) {
-      return res.status(404).json({
-        message: "invalid user id provided",
+    if (!/^\d+$/.test(idParam)) {
+      return res.status(400).json({
+        message: "invalid user id",
       });
     }
+
+    const userID = parseInt(req.params.id);
+    const status = req.body;
 
     if (status.isActive != true && status.isActive != false) {
       return res.status(400).json({
@@ -66,7 +75,10 @@ export const userStatus = async (
       });
     }
 
-    const [affectedRows] = await User.update(status, { where: { id: userID } });
+    const [affectedRows] = await User.update(
+      { isActive: status.isActive },
+      { where: { id: userID } },
+    );
     if (affectedRows === 0) {
       return res.status(404).json({
         message: "no user found with the given id",
@@ -184,6 +196,12 @@ export const updatePassword = async (
     if (!password) {
       return res.status(400).json({
         message: "new password is required",
+      });
+    }
+
+    if (password.length < 4) {
+      return res.status(400).json({
+        message: "password must be at least 8 characters long",
       });
     }
 

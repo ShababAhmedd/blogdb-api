@@ -14,6 +14,19 @@ export const signUp = async (req: Request, res: Response) => {
       });
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        message: "invalid email format",
+      });
+    }
+
+    if (password.length < 4) {
+      return res.status(400).json({
+        message: "password must be at least 8 characters long",
+      });
+    }
+
     const existing = await User.findOne({ where: { email } });
     if (existing) {
       return res.status(409).json({
@@ -75,7 +88,7 @@ export const login = async (req: Request, res: Response) => {
 
     const isPasswordValid = await bcrypt.compare(password, findUser.password);
     if (!isPasswordValid) {
-      return res.status(400).json({
+      return res.status(401).json({
         message: "invalid credentials",
       });
     }

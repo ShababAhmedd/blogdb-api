@@ -13,7 +13,12 @@ import { canModifyBlog } from "../middlewares/blog.middleware.ts";
 const router = Router();
 router.post("/api/blogs/create", authMiddleWare, createBlog);
 router.put("/api/blogs/update/:id", authMiddleWare, canModifyBlog, updateBlog);
-router.delete("/api/blogs/:id", authMiddleWare, canModifyBlog, deleteBlog);
+router.delete(
+  "/api/blogs/delete/:id",
+  authMiddleWare,
+  canModifyBlog,
+  deleteBlog,
+);
 // router.get("/api/blogs", getAllBlogs);
 router.get("/api/blogs/:id", getBlogById);
 router.get("/api/blogs", searchFilterBlogs);

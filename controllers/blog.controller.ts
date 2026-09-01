@@ -115,7 +115,21 @@ export const getAllBlogs = async (req: Request, res: Response) => {
 export const getBlogById = async (req: Request, res: Response) => {
   try {
     const blogID = req.params.id;
-    const findBlog = await Blog.findByPk(blogID);
+
+    if (!/^\d+$/.test(blogID!)) {
+      return res.status(400).json({
+        message: "invalid blog id",
+      });
+    }
+
+    const findBlog = await Blog.findByPk(blogID, {
+      attributes: { exclude: ["userId", "createdAt", "updatedAt"] },
+      include: {
+        model: User,
+        as: "author",
+        attributes: ["id", "firstname", "lastname"],
+      },
+    });
 
     if (!findBlog) {
       return res.status(404).json({

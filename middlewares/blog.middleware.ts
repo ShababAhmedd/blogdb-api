@@ -10,6 +10,13 @@ export const canModifyBlog = async (
 ) => {
   try {
     const blogID = req.params.id;
+
+    if (!blogID || !/^\d+$/.test(blogID)) {
+      return res.status(400).json({
+        message: "invalid blog id",
+      });
+    }
+
     const findBlog = await Blog.findByPk(blogID);
     if (!findBlog) {
       return res.status(404).json({
