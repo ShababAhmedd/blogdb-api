@@ -3,6 +3,7 @@ import type { AuthenticatedRequest } from "../utils/authenticatedRequest.ts";
 import getErrorMessage from "../utils/getErrorMessage.ts";
 import Blog from "../models/blog.model.ts";
 import User from "../models/user.model.ts";
+import { Op } from "sequelize";
 
 export const createBlog = async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -125,6 +126,41 @@ export const getBlogById = async (req: Request, res: Response) => {
     res.status(200).json({
       message: "blog found",
       data: findBlog,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "internal server error",
+      data: getErrorMessage(error),
+    });
+  }
+};
+
+export const searchFilterBlogs = async (req: Request, res: Response) => {
+  try {
+    const { title, category } = req.query;
+
+    const where: Record<string, unknown> = {};
+
+    if (title) {
+      where.blogTitle = { [Op.like]: `%${title}%` };
+    }
+
+    if (category) {
+      where.category = category;
+    }
+
+    const blogs = await Blog.findAll({
+      where,
+      attributes: { exclude: ["userId", "createdAt", "updatedAt"] },
+      include: {
+        model: User,
+        as: "author",
+        attributes: ["id", "firstname", "lastname"],
+      },
+    });
+
+    res.status(200).json({
+      data: blogs,
     });
   } catch (error) {
     res.status(500).json({
