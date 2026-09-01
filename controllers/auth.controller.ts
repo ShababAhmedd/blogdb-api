@@ -14,6 +14,12 @@ export const signUp = async (req: Request, res: Response) => {
       });
     }
 
+    if (req.body.role !== undefined) {
+      return res.status(400).json({
+        message: "you cannot assign role during registration",
+      });
+    }
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return res.status(400).json({
@@ -23,7 +29,7 @@ export const signUp = async (req: Request, res: Response) => {
 
     if (password.length < 4) {
       return res.status(400).json({
-        message: "password must be at least 8 characters long",
+        message: "password must be at least 4 characters long",
       });
     }
 

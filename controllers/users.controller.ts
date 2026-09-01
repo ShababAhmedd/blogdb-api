@@ -141,6 +141,12 @@ export const updateProfile = async (
   try {
     let { firstName, lastName } = req.body;
 
+    if (req.body.role !== undefined || req.body.isActive !== undefined) {
+      return res.status(403).json({
+        message: "you are not allowed to update role or isActive",
+      });
+    }
+
     const userID =
       typeof req.user === "object" && req.user != null
         ? req.user.id
@@ -201,7 +207,7 @@ export const updatePassword = async (
 
     if (password.length < 4) {
       return res.status(400).json({
-        message: "password must be at least 8 characters long",
+        message: "password must be at least 4 characters long",
       });
     }
 
